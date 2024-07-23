@@ -7,21 +7,21 @@ type CartType = {
     items:CartItem[];
     addItem : (product:Product,size:CartItem["size"]) => void;
     updateQuantity : (itemId:string,amount:-1|1) => void;
-
-
+    total:number | string;
 
 }
 export const CartContext = createContext<CartType>({
     items: [],
     addItem :() => {},
     updateQuantity :() => {},
+    total:0
 });
 
 const CartProvider = ({children} : PropsWithChildren) =>{
 
     const [items,setItems] = useState<CartItem[]>([]);
     //add item function
-    const addItem = (product:Product,size:CartItem["size"]) =>{
+    const addItem = (product:Product,size:CartItem["size"]) => { 
         // if already in cart 
         const existingItem = items.find(item=>item.product === product && item.size === size)
         if(existingItem){
@@ -37,15 +37,15 @@ const CartProvider = ({children} : PropsWithChildren) =>{
         }
 
         setItems([newCartItem,...items]);
-        //update quantity
+        
     }
     //update quantity function
     const updateQuantity =  (itemId:string,amount:-1 | 1) => {
-        setItems(items.map(item=>item.id !== itemId ? item : {...item ,quantity:item.quantity + amount }).filter((item)=>item.quantity > 0));
+        setItems(items.map(item=>item.id !== itemId ? item : {...item ,quantity:item.quantity + amount }).filter((item)=>item.quantity > 0 ));
     }
-    
+    const total = items.reduce((sum,item)=>(sum += item.product.price * item.quantity),0).toFixed(2);
     return (
-        <CartContext.Provider value={{items:items,addItem,updateQuantity}}>
+        <CartContext.Provider value={{items:items,addItem,updateQuantity,total}}>
           {children}
         </CartContext.Provider>
     )

@@ -4,6 +4,7 @@ import { Link, Tabs } from 'expo-router';
 import { Pressable } from 'react-native';
 import { useColorScheme } from '@/src/components/useColorScheme.web';
 import { useClientOnlyValue } from '@/src/components/useClientOnlyValue';
+import Colors from '@/src/constants/Colors';
 
 
 
@@ -21,7 +22,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor:"red",
+        tabBarActiveTintColor:Colors.light.tint,
         // Disable the static render of the header on web
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
