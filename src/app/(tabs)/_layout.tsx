@@ -3,8 +3,8 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Link, Tabs } from 'expo-router';
 import { Pressable } from 'react-native';
 import { useColorScheme } from '@/src/components/useColorScheme.web';
-import Colors from '@/src/constants/Colors';
 import { useClientOnlyValue } from '@/src/components/useClientOnlyValue';
+
 
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -26,11 +26,13 @@ export default function TabLayout() {
         // to prevent a hydration error in React Navigation v6.
         headerShown: useClientOnlyValue(false, true),
       }}>
+        <Tabs.Screen name='index' options={{href:null}} />
       <Tabs.Screen
-        name="index"
+        name="menu"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Menu',
+          headerShown:false,
+          tabBarIcon: ({ color }) => <FontAwesome name="cutlery" size={20}  color={color}/>,
           headerRight: () => (
             <Link href="/modal" asChild>
               <Pressable>
@@ -50,8 +52,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="two"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Orders',
+          tabBarIcon: ({ color }) => <FontAwesome name="list-ul" size={20} color={color} />,
         }}
       />
     </Tabs>
