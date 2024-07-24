@@ -19,6 +19,10 @@ const CreateProductScreen = () => {
   //validate function
   const validateInput = () => {
     setErrors("");
+    if(!title && !price){
+      setErrors("Title and price are required");
+      return false;
+    }
     if (!title) {
       setErrors("Title is required");
       return false;
@@ -70,6 +74,9 @@ const CreateProductScreen = () => {
       <Text onPress={pickImage} style={styles.textButton}>
         Select Product image
       </Text>
+      <Text style={{ color: "red", fontWeight: "500",textAlign:"center" }}>
+        {errors === "Title and price are required" ? errors : ""}
+      </Text>
       <Text style={styles.label}>Product title</Text>
       <Text style={{ color: "red", fontWeight: "500" }}>
         {errors === "Title is required" ? errors : ""}
@@ -108,8 +115,8 @@ const styles = StyleSheet.create({
     padding: 7,
     backgroundColor: "#E4E8E8",
     borderRadius: 10,
-    marginTop: 5,
-    marginBottom: 20,
+    marginBottom:15
+  
   },
   textButton: {
     alignSelf: "center",
@@ -123,7 +130,7 @@ const styles = StyleSheet.create({
   label: {
     color: "gray",
     fontSize: 16,
-    marginBottom: 15,
+   
   },
   image: {
     width: 150,
