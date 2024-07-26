@@ -9,6 +9,9 @@ const index = () => {
       <Link href={'/(user)'} asChild>
         <Button text="Start ordering" />
       </Link>
+      <Link href={'/(auth)/sign-in'} asChild>
+      <Button text="Sign in" />
+      </Link>
       <Link href={'/(admin)'} asChild>
         <Text style={{fontWeight:"500" ,textAlign:"center",fontSize:15}}>Log in as admin</Text>
       </Link>
