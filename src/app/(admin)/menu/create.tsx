@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, Image } from "react-native";
+import { View, Text, StyleSheet, TextInput, Image, Alert } from "react-native";
 import React, { useState } from "react";
 import Button from "@/src/components/Button";
 import * as ImagePicker from "expo-image-picker";
@@ -79,6 +79,20 @@ const CreateProductScreen = () => {
         onCreate();
     }
   }
+  const onDelete = () => {
+    console.warn("Delete function")
+   
+  }
+
+  const confirmDelete = () =>{
+    Alert.alert("Confirm","Are you sure you want to delete this product?",[{
+      text: "Cancel",},{
+        text:"Delete",
+        style:"destructive",
+        onPress:onDelete
+      }]);
+
+  }
   return (
     <View style={styles.container}>
         <Stack.Screen options={{title:isUpdating ? "Update product":"Create product"}} />
@@ -120,6 +134,9 @@ const CreateProductScreen = () => {
       />
 
       <Button onPress={onSubmit} text={isUpdating ? "Update":"Create"} />
+      {
+        isUpdating && <Text  onPress={confirmDelete} style={styles.deleteButton}>Delete</Text>
+      }
     </View>
   );
 };
@@ -155,5 +172,17 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     alignSelf: "center",
   },
+  deleteButton:{
+    backgroundColor: "#c22f1f",
+    padding: 15,
+    alignItems: 'center',
+    borderRadius: 100,
+    marginVertical: 10,
+    textAlign:"center",
+    color:"white",
+    fontWeight:"500",
+    fontSize: 16,
+  }
+
 });
 export default CreateProductScreen;
