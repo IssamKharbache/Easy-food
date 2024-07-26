@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TextInput, Image } from "react-native";
 import React, { useState } from "react";
 import Button from "@/src/components/Button";
 import * as ImagePicker from "expo-image-picker";
-import { Stack } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 
 const CreateProductScreen = () => {
   const [title, setTitle] = useState("");
@@ -10,13 +10,16 @@ const CreateProductScreen = () => {
   const [errors, setErrors] = useState("");
 
   const [image, setImage] = useState<string | null>(null);
+  const {id} = useLocalSearchParams();
+
+  const isUpdating = !!id;
 
   const resetFields = () => {
     setPrice("");
     setTitle("");
   };
 
-  //validate function
+  //validate input function
   const validateInput = () => {
     setErrors("");
     if(!title && !price){
@@ -46,6 +49,14 @@ const CreateProductScreen = () => {
     }
     resetFields();
   };
+   //update product function
+   const onUpdate= () => {
+    if (!validateInput()) {
+      return;
+    }
+    resetFields();
+    console.warn("updating product function")
+  };
 
   //pick image function
   const pickImage = async () => {
@@ -60,9 +71,17 @@ const CreateProductScreen = () => {
       setImage(result.assets[0].uri);
     }
   };
+
+  const onSubmit = () => {
+    if(isUpdating){
+        onUpdate();
+    }else{
+        onCreate();
+    }
+  }
   return (
     <View style={styles.container}>
-        <Stack.Screen options={{title:"Create Product"}} />
+        <Stack.Screen options={{title:isUpdating ? "Update product":"Create product"}} />
       <Image
         source={{
           uri:
@@ -90,7 +109,7 @@ const CreateProductScreen = () => {
 
       <Text style={styles.label}>Product price</Text>
       <Text style={{ color: "red", fontWeight: "500" }}>
-        {errors === "Price is required" ? errors : ""}
+        {errors === "Price is required" && "Price must be a number" ? errors : ""}
       </Text>
       <TextInput
         value={price}
@@ -100,7 +119,7 @@ const CreateProductScreen = () => {
         style={styles.input}
       />
 
-      <Button onPress={onCreate} text="Create" />
+      <Button onPress={onSubmit} text={isUpdating ? "Update":"Create"} />
     </View>
   );
 };
@@ -116,7 +135,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#E4E8E8",
     borderRadius: 10,
     marginBottom:15
-  
   },
   textButton: {
     alignSelf: "center",
@@ -130,7 +148,6 @@ const styles = StyleSheet.create({
   label: {
     color: "gray",
     fontSize: 16,
-   
   },
   image: {
     width: 150,
