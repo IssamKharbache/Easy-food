@@ -55,9 +55,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="orders"
         options={{
           title: 'Orders',
+          headerShown:false,
           tabBarIcon: ({ color }) => <FontAwesome name="list-ul" size={20} color={color} />,
         }}
       />
