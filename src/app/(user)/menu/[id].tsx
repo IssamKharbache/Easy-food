@@ -5,6 +5,7 @@ import products from "@/assets/data/products";
 import Button from "@/src/components/Button";
 import { useCart } from "@/src/providers/CartProvider";
 import { PizzaSize } from "@/src/types";
+import { supabase } from "@/src/lib/supabase";
 
 const ProductDetailedScreen = () => {
   const [selectedSize, setSelectedSize] = useState<PizzaSize>("M");
