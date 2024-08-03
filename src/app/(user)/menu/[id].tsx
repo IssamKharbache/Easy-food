@@ -1,21 +1,29 @@
-import { View, Text, Image, StyleSheet, Pressable } from "react-native";
+import { View, Text, Image, StyleSheet, Pressable, ActivityIndicator } from "react-native";
 import React, { useState } from "react";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import products from "@/assets/data/products";
+
 import Button from "@/src/components/Button";
 import { useCart } from "@/src/providers/CartProvider";
 import { PizzaSize } from "@/src/types";
-import { supabase } from "@/src/lib/supabase";
+import { useProduct } from "@/src/api/products";
+import { defaultImage } from "@/assets/data/products";
 
 const ProductDetailedScreen = () => {
   const [selectedSize, setSelectedSize] = useState<PizzaSize>("M");
   const { addItem } = useCart();
-  const { id } = useLocalSearchParams();
+
+  const { id: idString } = useLocalSearchParams();
+
+  if(idString === undefined){
+    return;
+  }
+  const id = parseFloat(typeof idString === "string" ? idString : idString[0]);
+
+  const {data:product,error,isLoading} = useProduct(id);
 
   const sizes: PizzaSize[] = ["S", "M", "L", "XL"];
 
   const router = useRouter();
-  const product = products.find((p) => p.id.toString() === id);
 
   const addToCart = () => {
     if (!product) {
@@ -25,15 +33,19 @@ const ProductDetailedScreen = () => {
     router.push("/cart");
   };
 
-
-
+  if(isLoading){
+    return <ActivityIndicator />
+  }
+  if(error){
+    return <Text>Failed to get product , try again..</Text>
+  }
   if (!product) {
     return <Text>Product not found !</Text>;
   }
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ title: "Details" }} />
-      <Image source={{ uri: product.image }} style={styles.image} />
+      <Image source={{ uri: product.image || defaultImage}} style={styles.image} />
       <Text style={{ fontWeight: "500", fontSize: 20 }}>Select size</Text>
       <View style={styles.sizes}>
         {sizes.map((size, idx) => (
@@ -61,8 +73,10 @@ const ProductDetailedScreen = () => {
           </Pressable>
         ))}
       </View>
-
-      <Text style={styles.price}>${product.price}</Text>
+   <View style={styles.info}>
+   <Text style={styles.name}>{product.name}</Text>
+   <Text style={styles.price}>${product.price}</Text>
+   </View>
       <Button text="Add to cart" onPress={addToCart} />
     </View>
   );
@@ -80,10 +94,24 @@ const styles = StyleSheet.create({
     width: "100%",
     aspectRatio: 1,
   },
+  info:{
+    display:"flex",
+    flexDirection:"row",
+    alignItems:"center",
+    justifyContent:"space-between",
+    marginTop:"auto",
+    marginBottom:"auto",
+    padding:25
+  },
+  name:{
+    fontWeight: "bold",
+    fontSize: 25,
+    textTransform:"capitalize",
+
+  },
   price: {
     fontWeight: "bold",
-    marginTop: "auto",
-    fontSize: 40,
+    fontSize: 30,
   },
 
   sizes: {

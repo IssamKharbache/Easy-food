@@ -1,18 +1,28 @@
-import { View, Text, Image, StyleSheet, Pressable } from "react-native";
-import React, { useState } from "react";
-import { Link, Stack, useLocalSearchParams, useRouter } from "expo-router";
-import products from "@/assets/data/products";
-import Button from "@/src/components/Button";
-import { useCart } from "@/src/providers/CartProvider";
-import { PizzaSize } from "@/src/types";
+import { View, Text, Image, StyleSheet, Pressable, ActivityIndicator } from "react-native";
+import React from "react";
+import { Link, Stack, useLocalSearchParams} from "expo-router";
 import { FontAwesome } from "@expo/vector-icons";
 import Colors from "@/src/constants/Colors";
+import { useProduct } from "@/src/api/products";
+import { defaultImage } from "@/assets/data/products";
 
 const ProductDetailedScreen = () => {
-  const { id } = useLocalSearchParams();
-  const product = products.find((p) => p.id.toString() === id);
+  const { id: idString } = useLocalSearchParams();
+
+  if(idString === undefined){
+    return;
+  }
+  const id = parseFloat(typeof idString === "string" ? idString : idString[0]);
+
+  const {data:product,error,isLoading} = useProduct(id);
   if (!product) {
     return <Text>Product not found !</Text>;
+  }
+  if(isLoading){
+    return <ActivityIndicator />
+  }
+  if(error){
+    return <Text>Failed to get product , try again..</Text>
   }
   return (
     <View style={styles.container}>
@@ -36,7 +46,8 @@ const ProductDetailedScreen = () => {
         }}
       />
       <Stack.Screen options={{ title: "Details" }} />
-      <Image source={{ uri: product.image }} style={styles.image} />
+      <Image source={{ uri: product.image || defaultImage}} style={styles.image} />
+      <Text style={styles.price}>{product.name}</Text>
       <Text style={styles.price}>${product.price}</Text>
     </View>
   );
@@ -57,7 +68,9 @@ const styles = StyleSheet.create({
   price: {
     fontWeight: "bold",
     fontSize: 40,
-    textAlign:"center"
+    textAlign:"center",
+    marginTop:35,
+    textTransform:"capitalize"
   },
 
   sizes: {

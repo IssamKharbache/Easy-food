@@ -20,7 +20,7 @@ const ProductListItem = ({ product }: ProductListItemProps) => {
           style={styles.image}
           resizeMode="contain"
         />
-        <Text style={styles.title}>{product.title}</Text>
+        <Text style={styles.title}>{product.name}</Text>
         <Text style={styles.price}>${product.price}</Text>
       </Pressable>
     </Link>
