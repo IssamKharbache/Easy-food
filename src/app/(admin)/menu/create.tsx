@@ -2,31 +2,36 @@ import { View, Text, StyleSheet, TextInput, Image, Alert } from "react-native";
 import React, { useState } from "react";
 import Button from "@/src/components/Button";
 import * as ImagePicker from "expo-image-picker";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useAddProduct } from "@/src/api/products";
 
 const CreateProductScreen = () => {
-  const [title, setTitle] = useState("");
+  const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [errors, setErrors] = useState("");
 
   const [image, setImage] = useState<string | null>(null);
   const {id} = useLocalSearchParams();
 
+  const router = useRouter();
+
   const isUpdating = !!id;
+
+  const {mutate:addProduct} = useAddProduct();
 
   const resetFields = () => {
     setPrice("");
-    setTitle("");
+    setName("");
   };
 
   //validate input function
   const validateInput = () => {
     setErrors("");
-    if(!title && !price){
+    if(!name && !price){
       setErrors("Title and price are required");
       return false;
     }
-    if (!title) {
+    if (!name) {
       setErrors("Title is required");
       return false;
     }
@@ -47,7 +52,14 @@ const CreateProductScreen = () => {
     if (!validateInput()) {
       return;
     }
-    resetFields();
+    addProduct({name,price:parseFloat(price),image},{
+      onSuccess:()=>{
+        resetFields();
+        router.push("/(admin)");
+      }
+    })
+   
+   
   };
    //update product function
    const onUpdate= () => {
@@ -115,8 +127,8 @@ const CreateProductScreen = () => {
         {errors === "Title is required" ? errors : ""}
       </Text>
       <TextInput
-        value={title}
-        onChangeText={setTitle}
+        value={name}
+        onChangeText={setName}
         placeholder="Title"
         style={styles.input}
       />
