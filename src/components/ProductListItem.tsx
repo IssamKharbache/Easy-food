@@ -3,6 +3,7 @@ import { Text, View } from "./Themed";
 import Colors from "../constants/Colors";
 import { Product } from "../types";
 import { Link, useSegments } from "expo-router";
+import { defaultImage } from "@/assets/data/products";
 
 type ProductListItemProps = {
   product: Product;
@@ -15,11 +16,11 @@ const ProductListItem = ({ product }: ProductListItemProps) => {
     <Link href={`${segments[0]}/menu/${product.id}`} asChild>
       <Pressable style={styles.container} >
         <Image
-          source={{ uri: product.image || "" }}
+          source={{ uri: product.image || defaultImage}}
           style={styles.image}
           resizeMode="contain"
         />
-        <Text style={styles.title}>{product.name}</Text>
+        <Text style={styles.title}>{product.title}</Text>
         <Text style={styles.price}>${product.price}</Text>
       </Pressable>
     </Link>

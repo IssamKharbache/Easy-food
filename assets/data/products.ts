@@ -72,3 +72,6 @@ const products = [
 ];
 
 export default products;
+
+
+export const defaultImage = "https://cdn-icons-png.flaticon.com/512/2094/2094661.png";
