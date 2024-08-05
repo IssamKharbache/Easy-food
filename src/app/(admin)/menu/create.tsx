@@ -1,23 +1,40 @@
-import { View, Text, StyleSheet, TextInput, Image, Alert } from "react-native";
-import React, { useState } from "react";
+import { View, Text, StyleSheet, TextInput, Image, Alert, ActivityIndicator } from "react-native";
+import React, { useEffect, useState } from "react";
 import Button from "@/src/components/Button";
 import * as ImagePicker from "expo-image-picker";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useAddProduct } from "@/src/api/products";
+import { useAddProduct, useDeleteProduct, useProduct, useUpdateProduct } from "@/src/api/products";
 
 const CreateProductScreen = () => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [errors, setErrors] = useState("");
+  const [isDeleting,setIsDeleting] = useState(false);
 
   const [image, setImage] = useState<string | null>(null);
-  const {id} = useLocalSearchParams();
+  const {id:idString} = useLocalSearchParams();
+  if(idString === undefined){
+    return;
+  }
+  const id = parseFloat(typeof idString === "string" ? idString : idString[0]);
 
   const router = useRouter();
 
   const isUpdating = !!id;
 
   const {mutate:addProduct} = useAddProduct();
+  const {mutate:updateProduct} = useUpdateProduct();
+  const {mutate:deleteProduct} = useDeleteProduct();
+  const {data:updatingInfo} = useProduct(id);
+  
+
+  useEffect(()=>{
+   if(updatingInfo){
+    setName(updatingInfo.name);
+    setPrice(updatingInfo.price.toString());
+    setImage(updatingInfo.image);
+   }
+  },[updatingInfo])
 
   const resetFields = () => {
     setPrice("");
@@ -66,8 +83,14 @@ const CreateProductScreen = () => {
     if (!validateInput()) {
       return;
     }
-    resetFields();
-    console.warn("updating product function")
+    updateProduct({
+      id,name,price:parseFloat(price),image,
+    },{
+      onSuccess:()=>{
+        resetFields();
+        router.push("/(admin)");
+      }
+    })
   };
 
   //pick image function
@@ -92,7 +115,13 @@ const CreateProductScreen = () => {
     }
   }
   const onDelete = () => {
-    console.warn("Delete function")
+    setIsDeleting(true);
+    deleteProduct(id,{onSuccess:() => {
+      router.push("/(admin)");
+      setIsDeleting(false);
+    },onError:()=>{
+      setIsDeleting(false);
+    }});
    
   }
 
@@ -104,6 +133,14 @@ const CreateProductScreen = () => {
         onPress:onDelete
       }]);
 
+  }
+  if(isDeleting){
+    return (
+      <View style={styles.deletingContainer}>
+        <Text style={styles.deleteMsg}>Deleting product please wait...</Text>
+            <ActivityIndicator size="large" color="red" />
+      </View>
+    )
   }
   return (
     <View style={styles.container}>
@@ -194,6 +231,15 @@ const styles = StyleSheet.create({
     color:"white",
     fontWeight:"500",
     fontSize: 16,
+  },
+  deletingContainer:{
+    margin:"auto"
+  },
+  deleteMsg:{
+    fontSize:20,
+    color:"red",
+    marginBottom:25
+    
   }
 
 });
